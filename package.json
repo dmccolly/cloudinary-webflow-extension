@@ -18,6 +18,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@webflow/designer-extension-typings": "^2.0.23",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

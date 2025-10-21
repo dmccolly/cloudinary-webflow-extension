@@ -43,10 +43,18 @@ export const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
     alert('URL copied to clipboard!');
   };
 
-  const handleInsert = () => {
-    // This would integrate with Webflow Designer API
-    console.log('Insert asset:', asset.secure_url);
-    alert(`Asset URL: ${asset.secure_url}\n\nIn a real Webflow extension, this would insert the image into your design.`);
+  const handleInsert = async () => {
+    console.log("Insert asset:", asset.secure_url);
+    
+    // Import dynamically to avoid issues when not in Webflow
+    const { insertImageIntoWebflow } = await import("../webflow/webflowClient");
+    
+    const altText = asset.display_name || asset.public_id.split("/").pop() || "Cloudinary asset";
+    const success = await insertImageIntoWebflow(asset.secure_url, altText);
+    
+    if (success) {
+      alert("✅ Image inserted into Webflow page!");
+    }
   };
 
   console.log('🖼️ Image URL for', asset.public_id, ':', asset.secure_url);

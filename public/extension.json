@@ -1,0 +1,15 @@
+{
+  "name": "Cloudinary Asset Browser",
+  "description": "Browse and insert media assets from your Cloudinary library directly into Webflow Designer",
+  "version": "1.0.0",
+  "author": "Your Name",
+  "homepage": "https://cloudinary-webflow-extension.netlify.app",
+  "icon": "https://cloudinary-webflow-extension.netlify.app/icon.png",
+  "entryPoint": "https://cloudinary-webflow-extension.netlify.app",
+  "permissions": [
+    "designer:read",
+    "designer:write"
+  ],
+  "categories": ["media", "assets"],
+  "screenshots": []
+}
