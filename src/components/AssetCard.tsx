@@ -7,24 +7,35 @@ interface AssetCardProps {
 }
 
 export const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
+  console.log('🎴 AssetCard rendering with asset:', asset);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   const formatBytes = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    try {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    } catch (error) {
+      console.error('Error formatting bytes:', error);
+      return '0 Bytes';
+    }
   };
 
   const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Unknown date';
+    }
   };
 
   const handleCopyUrl = () => {
@@ -37,6 +48,9 @@ export const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
     console.log('Insert asset:', asset.secure_url);
     alert(`Asset URL: ${asset.secure_url}\n\nIn a real Webflow extension, this would insert the image into your design.`);
   };
+
+  console.log('🖼️ Image URL for', asset.public_id, ':', asset.secure_url);
+  console.log('🎨 Image state - loaded:', imageLoaded, 'error:', imageError);
 
   return (
     <div className="asset-card">
@@ -56,8 +70,14 @@ export const AssetCard: React.FC<AssetCardProps> = ({ asset }) => {
           src={asset.secure_url}
           alt={asset.public_id}
           loading="lazy"
-          onLoad={() => setImageLoaded(true)}
-          onError={() => setImageError(true)}
+          onLoad={() => {
+            console.log('✅ Image loaded successfully:', asset.secure_url);
+            setImageLoaded(true);
+          }}
+          onError={(e) => {
+            console.error('❌ Image failed to load:', asset.secure_url, e);
+            setImageError(true);
+          }}
           style={{ display: imageLoaded ? 'block' : 'none' }}
           className="asset-image"
         />

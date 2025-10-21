@@ -14,15 +14,43 @@ export const AssetBrowser: React.FC = () => {
   const { assets, loading, error, hasMore, fetchAssets, loadMore } = useCloudinaryAssets();
 
   useEffect(() => {
-    // Load initial assets
+    // Load initial assets - fetch more to enable client-side filtering
     fetchAssets({
       PAGE: 1,
-      limit: 20,
-      search: searchQuery,
-      resource_type: resourceType,
-      tag: selectedTag,
+      limit: 100,
+      search: '',
+      resource_type: 'image',
+      tag: '',
     });
-  }, [searchQuery, resourceType, selectedTag, fetchAssets]);
+  }, [fetchAssets]);
+
+  // Client-side filtering
+  const filteredAssets = assets.filter(asset => {
+    // Filter by resource type
+    if (resourceType && asset.resource_type !== resourceType) {
+      return false;
+    }
+    
+    // Filter by tag
+    if (selectedTag && (!asset.tags || !asset.tags.includes(selectedTag))) {
+      return false;
+    }
+    
+    // Filter by search query (searches across multiple fields)
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const matchesPublicId = asset.public_id.toLowerCase().includes(query);
+      const matchesDisplayName = asset.display_name?.toLowerCase().includes(query);
+      const matchesTags = asset.tags?.some(tag => tag.toLowerCase().includes(query));
+      const matchesFormat = asset.format.toLowerCase().includes(query);
+      
+      if (!matchesPublicId && !matchesDisplayName && !matchesTags && !matchesFormat) {
+        return false;
+      }
+    }
+    
+    return true;
+  });
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -37,13 +65,7 @@ export const AssetBrowser: React.FC = () => {
   };
 
   const handleLoadMore = () => {
-    loadMore({
-      PAGE: Math.ceil(assets.length / 20) + 1,
-      limit: 20,
-      search: searchQuery,
-      resource_type: resourceType,
-      tag: selectedTag,
-    });
+    loadMore();
   };
 
   return (
@@ -79,13 +101,13 @@ export const AssetBrowser: React.FC = () => {
         </div>
       )}
 
-      {!loading && assets.length === 0 && !error && (
+      {!loading && filteredAssets.length === 0 && !error && (
         <div className="empty-message">
           <p>No assets found. Try adjusting your search or filters.</p>
         </div>
       )}
 
-      <AssetGrid assets={assets} />
+      <AssetGrid assets={filteredAssets} />
 
       {hasMore && !loading && assets.length > 0 && (
         <div className="load-more-container">

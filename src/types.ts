@@ -13,6 +13,9 @@ export interface CloudinaryAsset {
   secure_url: string;
   folder?: string;
   tags?: string[];
+  display_name?: string;
+  asset_id?: string;
+  asset_folder?: string;
 }
 
 export interface CloudinaryResponse {

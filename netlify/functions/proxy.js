@@ -15,10 +15,17 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const { PAGE = 1, limit = 20, search = '', resource_type = 'image', tag = '' } = event.queryStringParameters || {};
+    const { limit = 20, search = '', resource_type = 'image', tag = '', next_cursor = '' } = event.queryStringParameters || {};
     
-    const xanoUrl = `https://xajo-bs7d-cagt.n7e.xano.io/api:pYeQctVX/cloudinary_assets?PAGE=${PAGE}&limit=${limit}&search=${encodeURIComponent(search)}&resource_type=${resource_type}&tag=${encodeURIComponent(tag)}`;
+    // Build Xano URL with parameters
+    let xanoUrl = `https://xajo-bs7d-cagt.n7e.xano.io/api:pYeQctVX/cloudinary_assets?limit=${limit}&search=${encodeURIComponent(search)}&resource_type=${resource_type}&tag=${encodeURIComponent(tag)}`;
     
+    // Add cursor for pagination if provided
+    if (next_cursor) {
+      xanoUrl += `&next_cursor=${encodeURIComponent(next_cursor)}`;
+    }
+    
+    console.log('Fetching from Xano:', xanoUrl);
     const response = await fetch(xanoUrl);
     const rawData = await response.json();
     

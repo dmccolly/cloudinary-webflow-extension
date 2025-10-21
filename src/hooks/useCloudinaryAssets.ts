@@ -7,23 +7,27 @@ export const useCloudinaryAssets = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [currentParams, setCurrentParams] = useState<CloudinaryRequestParams | null>(null);
 
-  const fetchAssets = useCallback(async (params: CloudinaryRequestParams) => {
+  const fetchAssets = useCallback(async (params: CloudinaryRequestParams, cursor?: string) => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await xanoService.fetchCloudinaryAssets(params);
+      const response = await xanoService.fetchCloudinaryAssets(params, cursor);
 
-      if (params.PAGE === 1) {
+      if (!cursor) {
+        // First page - replace assets
         setAssets(response.resources);
       } else {
+        // Next page - append assets
         setAssets(prev => [...prev, ...response.resources]);
       }
 
       setHasMore(!!response.next_cursor);
-      setCurrentPage(params.PAGE);
+      setNextCursor(response.next_cursor || null);
+      setCurrentParams(params);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -32,7 +36,6 @@ export const useCloudinaryAssets = () => {
   }, []);
 
   const searchAssets = useCallback((query: string) => {
-    setCurrentPage(1);
     fetchAssets({
       PAGE: 1,
       limit: 20,
@@ -42,20 +45,18 @@ export const useCloudinaryAssets = () => {
     });
   }, [fetchAssets]);
 
-  const loadMore = useCallback((currentParams: CloudinaryRequestParams) => {
-    if (hasMore && !loading) {
-      fetchAssets({
-        ...currentParams,
-        PAGE: currentPage + 1,
-      });
+  const loadMore = useCallback(() => {
+    if (hasMore && !loading && currentParams && nextCursor) {
+      fetchAssets(currentParams, nextCursor);
     }
-  }, [hasMore, loading, currentPage, fetchAssets]);
+  }, [hasMore, loading, currentParams, nextCursor, fetchAssets]);
 
   const reset = useCallback(() => {
     setAssets([]);
     setError(null);
     setHasMore(true);
-    setCurrentPage(1);
+    setNextCursor(null);
+    setCurrentParams(null);
   }, []);
 
   return {
@@ -63,7 +64,7 @@ export const useCloudinaryAssets = () => {
     loading,
     error,
     hasMore,
-    currentPage,
+    nextCursor,
     fetchAssets,
     searchAssets,
     loadMore,

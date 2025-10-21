@@ -17,20 +17,26 @@ export class XanoService {
    * Fetch Cloudinary assets from Xano endpoint
    */
   async fetchCloudinaryAssets(
-    params: CloudinaryRequestParams
+    params: CloudinaryRequestParams,
+    cursor?: string
   ): Promise<CloudinaryResponse> {
     try {
       // Build query string from params
       const queryParams = new URLSearchParams({
-        PAGE: params.PAGE.toString(),
         limit: params.limit.toString(),
         search: params.search,
         resource_type: params.resource_type,
         tag: params.tag,
       });
 
+      // Add cursor for pagination if provided
+      if (cursor) {
+        queryParams.append('next_cursor', cursor);
+      }
+
       const url = `${XANO_CONFIG.FULL_URL}?${queryParams}`;
       console.log('🔍 Fetching from:', url);
+      if (cursor) console.log('📄 Using cursor for pagination:', cursor);
 
       const response = await fetch(url, {
         method: 'GET',
