@@ -1,0 +1,113 @@
+.cors-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.cors-content {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  max-width: 600px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  text-align: left;
+}
+
+.cors-content h2 {
+  color: #333;
+  margin-bottom: 16px;
+  font-size: 1.8rem;
+}
+
+.cors-content p {
+  color: #666;
+  margin-bottom: 24px;
+  font-size: 1.1rem;
+}
+
+.cors-steps {
+  background: #f8f9fa;
+  padding: 24px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.cors-steps h3 {
+  color: #28a745;
+  margin-bottom: 16px;
+}
+
+.cors-steps ol {
+  margin-left: 20px;
+}
+
+.cors-steps li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.cors-steps code {
+  background: #e9ecef;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  color: #d63384;
+}
+
+.cors-alternative {
+  background: #e3f2fd;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.cors-alternative h3 {
+  color: #1976d2;
+  margin-bottom: 12px;
+}
+
+.test-link {
+  display: inline-block;
+  background: #1976d2;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  margin: 12px 0;
+  transition: background 0.2s;
+}
+
+.test-link:hover {
+  background: #1565c0;
+}
+
+.cors-help {
+  background: #fff3cd;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #ffc107;
+}
+
+.cors-help h3 {
+  color: #856404;
+  margin-bottom: 12px;
+}
+
+.cors-help ul {
+  margin-left: 20px;
+}
+
+.cors-help li {
+  margin-bottom: 6px;
+}
+
+.cors-help code {
+  background: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  color: #d63384;
+}
