@@ -29,7 +29,10 @@ export class XanoService {
         tag: params.tag,
       });
 
-      const response = await fetch(`${XANO_CONFIG.FULL_URL}?${queryParams}`, {
+      const url = `${XANO_CONFIG.FULL_URL}?${queryParams}`;
+      console.log('🔍 Fetching from:', url);
+
+      const response = await fetch(url, {
         method: 'GET',
         mode: 'cors',
         headers: {
@@ -37,28 +40,36 @@ export class XanoService {
         },
       });
 
+      console.log('📡 Response status:', response.status);
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       const rawData = await response.json();
+      console.log('📦 Raw data received:', rawData);
+      console.log('📦 Data keys:', Object.keys(rawData));
       
       // Check if this is from Netlify function (returns Xano's wrapped response)
       if (rawData.cloudinary_response?.request?.url) {
         // The URL field contains the actual JSON response as a string
         const cloudinaryData = JSON.parse(rawData.cloudinary_response.request.url);
+        console.log('✅ Parsed Xano wrapped data, resources:', cloudinaryData.resources?.length);
         return cloudinaryData as CloudinaryResponse;
       }
       
-      // Direct Cloudinary response
+      // Direct Cloudinary response (from Netlify function that already parsed it)
       if (rawData.resources) {
+        console.log('✅ Direct Cloudinary response, resources:', rawData.resources.length);
+        console.log('🖼️ First asset:', rawData.resources[0]);
         return rawData as CloudinaryResponse;
       }
       
       // Fallback
+      console.warn('⚠️ Unexpected response format:', rawData);
       return rawData as CloudinaryResponse;
     } catch (error) {
-      console.error('Error fetching Cloudinary assets:', error);
+      console.error('❌ Error fetching Cloudinary assets:', error);
       throw error;
     }
   }
