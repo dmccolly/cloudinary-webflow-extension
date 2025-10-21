@@ -20,19 +20,31 @@ exports.handler = async (event, context) => {
     const xanoUrl = `https://xajo-bs7d-cagt.n7e.xano.io/api:pYeQctVX/cloudinary_assets?PAGE=${PAGE}&limit=${limit}&search=${encodeURIComponent(search)}&resource_type=${resource_type}&tag=${encodeURIComponent(tag)}`;
     
     const response = await fetch(xanoUrl);
-    const data = await response.json();
+    const rawData = await response.json();
+    
+    // Parse Xano's wrapped response
+    let cloudinaryData;
+    if (rawData.cloudinary_response?.request?.url) {
+      // The URL field contains the actual JSON response as a string
+      cloudinaryData = JSON.parse(rawData.cloudinary_response.request.url);
+    } else if (rawData.resources) {
+      // Direct Cloudinary response
+      cloudinaryData = rawData;
+    } else {
+      cloudinaryData = rawData;
+    }
     
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify(data)
+      body: JSON.stringify(cloudinaryData)
     };
   } catch (error) {
     console.error('Proxy error:', error);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: 'Failed to fetch data from Xano' })
+      body: JSON.stringify({ error: 'Failed to fetch data from Xano', details: error.message })
     };
   }
 };
